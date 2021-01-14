@@ -1,27 +1,60 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>
+  <div class="container">
+    <global-header :user='user'></global-header>
+    <column-list :list="list"></column-list>
+  </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import HelloWorld from './components/HelloWorld.vue'
-
+import 'bootstrap/dist/css/bootstrap.min.css'
+import ColumnList, { ColumnProps } from '@/components/ColumnList.vue'
+import GlobalHeader, { UserProps } from '@/components/GlobalHeader.vue'
+const testData: ColumnProps[] = [
+  {
+    id: 1,
+    title: 'test1专栏',
+    avatar: 'http://cdn.zjutshideshan.cn/1dfbe8d0-b4ff-11ea-ab69-a32ef6ab4e41',
+    description: '专栏描述专栏描述专栏描述专栏描述专栏描述专栏描述专栏描述专栏描述专栏专栏描述专栏描述专栏描述专述专栏描述专栏描述专栏'
+  },
+  {
+    id: 2,
+    title: '苏静恒',
+    avatar: 'http://cdn.zjutshideshan.cn/1dfbe8d0-b4ff-11ea-ab69-a32ef6ab4e41',
+    description: '专栏描述专栏描述专栏描述专栏描述专栏描述专栏描述专栏描述专栏描述专栏描述'
+  },
+  {
+    id: 3,
+    title: 'test1专栏',
+    // avatar: 'http://cdn.zjutshideshan.cn/1dfbe8d0-b4ff-11ea-ab69-a32ef6ab4e41',
+    description: '专栏描述专栏描述专栏描述专栏描述专栏描述专栏描述专栏描述专栏描述专栏描述'
+  },
+  {
+    id: 4,
+    title: '苏静恒',
+    avatar: 'http://cdn.zjutshideshan.cn/1dfbe8d0-b4ff-11ea-ab69-a32ef6ab4e41',
+    description: '专栏描述专栏描述专栏描述专栏描述专栏描述专栏描述专栏描述专栏描述专栏描述'
+  }
+]
+const currentUser: UserProps = {
+  isLogin: true,
+  name: 'shideshan'
+}
 export default defineComponent({
   name: 'App',
   components: {
-    HelloWorld
+    ColumnList,
+    GlobalHeader
+  },
+  setup () {
+    return {
+      list: testData,
+      user: currentUser
+    }
   }
 })
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+
 </style>
