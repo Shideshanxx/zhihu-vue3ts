@@ -18,6 +18,7 @@
 
 <script lang='ts'>
 import { defineComponent, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import ValidateInput, { RulesProp } from '@/components/ValidateInput.vue'
 import ValidateForm from '@/components/ValidateForm.vue'
 
@@ -29,6 +30,7 @@ export default defineComponent({
   setup () {
     const emailVal = ref('')
     const passwordVal = ref('')
+    const router = useRouter()
     const emailRules: RulesProp = [
       { type: 'required', message: '电子邮箱地址不能为空' },
       { type: 'email', message: '请输入正确的电子邮箱格式' }
@@ -44,6 +46,8 @@ export default defineComponent({
         //   password: passwordVal.value
         // }
         // 请求登录接口，将登陆状态存到localstorage
+
+        router.push('/')
       }
     }
     return {
