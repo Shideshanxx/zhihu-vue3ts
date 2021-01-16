@@ -22,7 +22,9 @@
 </template>
 
 <script lang='ts'>
-import { defineComponent, PropType, reactive, computed } from 'vue'
+import { defineComponent, PropType, reactive, computed, onMounted } from 'vue'
+import { emitter } from './ValidateForm.vue'
+
 // 验证email的正则（网上找的）
 const emailReg = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
 interface RuleProp {
@@ -47,7 +49,6 @@ export default defineComponent({
   },
   inheritAttrs: false,
   setup (props, context) {
-    console.log(context.attrs)
     const inputRef = reactive({
       val: computed({
         get: () => props.modelValue || '',
@@ -84,6 +85,9 @@ export default defineComponent({
       }
       return true
     }
+    onMounted(() => {
+      emitter.emit('form-item-created', validateInput)
+    })
     return {
       inputRef,
       validateInput
