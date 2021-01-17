@@ -41,7 +41,6 @@ export default defineComponent({
       { type: 'required', message: '密码不能为空' }
     ]
     const onFormSubmit = (result: boolean) => {
-      console.log('validate结果', result)
       if (result) {
         const payload = {
           email: emailVal.value,

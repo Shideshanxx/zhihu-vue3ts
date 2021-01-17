@@ -1,5 +1,5 @@
 import { createStore } from 'vuex'
-import { testData, testPosts, ColumnProps, PostProps } from './testData'
+import { testData, testPosts } from './testData'
 
 export interface ImageProps {
   _id?: string;
@@ -11,7 +11,7 @@ export interface UserProps {
   isLogin: boolean;
   nickName?: string;
   _id?: string;
-  column?: string;
+  columnId?: number;
   email?: string;
   avatar?: ImageProps;
   description?: string;
@@ -33,6 +33,22 @@ export interface UserProps {
 //   author?: string | UserProps;
 //   isHTML?: boolean;
 // }
+
+export interface ColumnProps {
+  id: number;
+  title: string;
+  avatar?: string;
+  description: string;
+}
+export interface PostProps {
+  id: number;
+  title: string;
+  content: string;
+  image?: string;
+  createdAt: string;
+  columnId: number;
+}
+
 // interface ListProps<P> {
 //   [id: string]: P;
 // }
@@ -46,11 +62,25 @@ const store = createStore<GlobalDataProps>({
   state: {
     columns: testData,
     posts: testPosts,
-    user: { isLogin: false }
+    user: { isLogin: false, nickName: 'sds', columnId: 1 }
   },
   mutations: {
     login (state, payload) {
       state.user = { ...state.user, isLogin: true, nickName: 'sds', email: payload.email }
+    },
+    createPost (state, newPost) {
+      state.posts.push(newPost)
+    }
+  },
+  getters: {
+    biggerColumnsLen (state) {
+      return state.columns.filter(c => c.id > 2).length
+    },
+    getColumnById: (state) => (id: number) => {
+      return state.columns.find(c => c.id === id)
+    },
+    getPostsByCid: (state) => (cid: number) => {
+      return state.posts.filter(post => post.columnId === cid)
     }
   }
 })

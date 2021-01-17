@@ -4,6 +4,7 @@ const Home = () => import('@/views/Home.vue')
 const Login = () => import('@/views/Login.vue')
 const Signup = () => import('@/views/Signup.vue')
 const ColumnDetail = () => import('@/views/ColumnDetail.vue')
+const CreatePost = () => import('@/views/CreatePost.vue')
 
 const routerHistory = createWebHashHistory()
 const router = createRouter({
@@ -25,6 +26,12 @@ const router = createRouter({
       name: 'signup',
       component: Signup,
       meta: { redirectAlreadyLogin: true }
+    },
+    {
+      path: '/create',
+      name: 'create',
+      component: CreatePost,
+      meta: { requiredLogin: true }
     },
     {
       path: '/column/:id',
