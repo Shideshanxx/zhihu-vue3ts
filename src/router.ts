@@ -1,4 +1,5 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
+import store from './store'
 
 const Home = () => import('@/views/Home.vue')
 const Login = () => import('@/views/Login.vue')
@@ -39,6 +40,23 @@ const router = createRouter({
       component: ColumnDetail
     }
   ]
+})
+router.beforeEach((to, from, next) => {
+  const { user } = store.state
+  const { requiredLogin, redirectAlreadyLogin } = to.meta
+  if (!user.isLogin) {
+    if (requiredLogin) {
+      next('login')
+    } else {
+      next()
+    }
+  } else {
+    if (redirectAlreadyLogin) {
+      next('/')
+    } else {
+      next()
+    }
+  }
 })
 
 export default router
