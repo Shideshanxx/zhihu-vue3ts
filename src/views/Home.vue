@@ -23,7 +23,7 @@
 </template>
 
 <script lang='ts'>
-import { defineComponent, computed, ref } from 'vue'
+import { defineComponent, computed, ref, onMounted } from 'vue'
 import { useStore } from 'vuex'
 import { GlobalDataProps } from '../store'
 import ColumnList from '@/components/ColumnList.vue'
@@ -34,15 +34,17 @@ export default defineComponent({
   },
   setup () {
     const store = useStore<GlobalDataProps>()
-    const list = computed(() => store.state.columns)
+    // const total = computed(() => store.state.columns.total)
+    // const currentPage = computed(() => store.state.columns.currentPage)
+    onMounted(() => {
+      store.dispatch('fetchColumns', { pageSize: 3 })
+    })
+    const list = computed(() => store.getters.getColumns)
 
     const isLastPage = ref(false)
     const loadMorePage = () => {
       alert('加载更多')
     }
-    // onUnmounted(() => {
-    //   store.dispatch('fetchColumns', { pageSize: 3 })
-    // })
     return {
       list,
       isLastPage,

@@ -7,7 +7,7 @@
           <div v-if="post.image" class="col-4">
             <img :src="post.image.fitUrl" :alt="post.title" class="rounded-lg w-100">
           </div>
-          <p :class="{'col-8': post.image}" class="text-muted">{{post.content}}</p>
+          <p :class="{'col-8': post.image}" class="text-muted">{{post.excerpt}}</p>
         </div>
         <span class="text-muted">{{post.createdAt}}</span>
       </div>
@@ -16,9 +16,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue'
-import { PostProps } from '../store'
-// import { generateFitUrl } from '../helper'
+import { defineComponent, PropType, computed } from 'vue'
+import { PostProps, ImageProps } from '../store'
+import { generateFitUrl } from '../helper'
 export default defineComponent({
   props: {
     list: {
@@ -27,14 +27,14 @@ export default defineComponent({
     }
   },
   setup (props) {
-    // const posts = computed(() => {
-    //   return props.list.map(post => {
-    //     generateFitUrl(post.image as ImageProps, 200, 110, ['m_fill'])
-    //     return post
-    //   })
-    // })
+    const posts = computed(() => {
+      return props.list.map(post => {
+        generateFitUrl(post.image as ImageProps, 200, 110, ['m_fill'])
+        return post
+      })
+    })
     return {
-      posts: props.list
+      posts
     }
   }
 })
