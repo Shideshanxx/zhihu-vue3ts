@@ -38,7 +38,13 @@ export interface PostProps {
 interface ListProps<P> {
   [id: string]: P;
 }
+
+export interface GlobalErrorProps {
+  status: boolean;
+  message?: string;
+}
 export interface GlobalDataProps {
+  error: GlobalErrorProps;
   token: string;
   loading: boolean;
   columns: { data: ListProps<ColumnProps>; currentPage: number; total: number };
@@ -57,6 +63,7 @@ const AsyncAndCommit = async (url: string, mutationName: string, commit: Commit,
 
 const store = createStore<GlobalDataProps>({
   state: {
+    error: { status: false },
     token: localStorage.getItem('token') || '',
     loading: false,
     columns: { data: {}, currentPage: 0, total: 0 },
@@ -73,7 +80,7 @@ const store = createStore<GlobalDataProps>({
     logout (state) {
       state.token = ''
       state.user = { isLogin: false }
-      localStorage.remove('token')
+      localStorage.removeItem('token')
       delete axios.defaults.headers.common.Authorization
     },
     fetchCurrentUser (state, rawData) {
@@ -90,20 +97,19 @@ const store = createStore<GlobalDataProps>({
         total: count,
         currentPage: currentPage * 1
       }
-      console.log('rawData', rawData)
-      console.log('state.columns', state.columns)
     },
     fetchColumn (state, rawData) {
-      console.log('fetchColumn rawData', rawData)
       state.columns.data[rawData.data._id] = rawData.data
     },
     fetchPosts (state, { data: rawData, extraData: columnId }) {
-      console.log('fetchPosts rawData', rawData)
       state.posts.data = { ...state.posts.data, ...arrToObj(rawData.data.list) }
       state.posts.loadedColumns.push(columnId)
     },
     setLoading (state, status) {
       state.loading = status
+    },
+    setError (state, e: GlobalErrorProps) {
+      state.error = e
     }
   },
   actions: {

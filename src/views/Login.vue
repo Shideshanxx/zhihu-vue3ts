@@ -22,6 +22,7 @@ import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import ValidateInput, { RulesProp } from '@/components/ValidateInput.vue'
 import ValidateForm from '@/components/ValidateForm.vue'
+import createMessage from '@/hooks/createMessage'
 
 export default defineComponent({
   components: {
@@ -49,6 +50,7 @@ export default defineComponent({
         // 请求登录接口，将登陆状态存到localstorage
         store.dispatch('loginAndFetch', payload).then(() => {
           // 提示登录成功
+          createMessage('登陆成功', 'success')
           setTimeout(() => {
             router.push('/')
           }, 2000)
