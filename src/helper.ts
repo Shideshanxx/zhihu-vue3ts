@@ -32,3 +32,25 @@ export const arrToObj = <T extends { _id?: string }>(arr: Array<T>) => {
 export const objToArr = <T>(obj: {[key: string]: T}) => {
   return Object.keys(obj).map(key => obj[key])
 }
+
+interface CheckCondition {
+  format?: string[];
+  size?: number;
+}
+type ErrorType = 'size' | 'format' | null
+export function beforeUploadCheck (file: File, condition: CheckCondition) {
+  const { format, size } = condition
+  const isValidFormat = format ? format.includes(file.type) : true
+  const isValidSize = size ? (file.size / 1024 / 1024 < size) : true
+  let error: ErrorType = null
+  if (!isValidFormat) {
+    error = 'format'
+  }
+  if (!isValidSize) {
+    error = 'size'
+  }
+  return {
+    passed: isValidFormat && isValidSize,
+    error
+  }
+}

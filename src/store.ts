@@ -2,6 +2,11 @@ import { createStore, Commit } from 'vuex'
 import axios, { AxiosRequestConfig } from 'axios'
 import { arrToObj, objToArr } from './helper'
 
+export interface ResponseType<P = {}> {
+  code: number;
+  msg: string;
+  data: P;
+}
 export interface ImageProps {
   _id?: string;
   url?: string;
@@ -86,9 +91,6 @@ const store = createStore<GlobalDataProps>({
     fetchCurrentUser (state, rawData) {
       state.user = { isLogin: true, ...rawData.data }
     },
-    createPost (state, newPost) {
-      state.posts.data[newPost._id] = newPost
-    },
     fetchColumns (state, rawData) {
       const { data } = state.columns
       const { list, count, currentPage } = rawData.data
@@ -104,6 +106,15 @@ const store = createStore<GlobalDataProps>({
     fetchPosts (state, { data: rawData, extraData: columnId }) {
       state.posts.data = { ...state.posts.data, ...arrToObj(rawData.data.list) }
       state.posts.loadedColumns.push(columnId)
+    },
+    fetchPost (state, rawData) {
+      state.posts.data[rawData.data._id] = rawData.data
+    },
+    createPost (state, newPost) {
+      state.posts.data[newPost._id] = newPost
+    },
+    updatePost (state, { data }) {
+      state.posts.data[data._id] = data
     },
     setLoading (state, status) {
       state.loading = status
@@ -133,6 +144,23 @@ const store = createStore<GlobalDataProps>({
     },
     fetchPosts ({ commit }, cid) {
       return AsyncAndCommit(`/api/columns/${cid}/posts`, 'fetchPosts', commit, { method: 'get' }, cid)
+    },
+    fetchPost ({ state, commit }, id) {
+      const currentPost = state.posts.data[id]
+      if (!currentPost || !currentPost.content) {
+        return AsyncAndCommit(`/api/posts/${id}`, 'fetchPost', commit)
+      } else {
+        return Promise.resolve({ data: currentPost })
+      }
+    },
+    createPost ({ commit }, payload) {
+      return AsyncAndCommit('/api/posts', 'createPost', commit, { method: 'post', data: payload })
+    },
+    updatePost ({ commit }, { id, payload }) {
+      return AsyncAndCommit(`/api/posts/${id}`, 'updatePost', commit, {
+        method: 'patch',
+        data: payload
+      })
     }
   },
   getters: {

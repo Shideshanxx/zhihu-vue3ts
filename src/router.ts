@@ -1,5 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import store from './store'
+import axios from 'axios'
 
 const Home = () => import('@/views/Home.vue')
 const Login = () => import('@/views/Login.vue')
@@ -42,13 +43,30 @@ const router = createRouter({
   ]
 })
 router.beforeEach((to, from, next) => {
-  const { user } = store.state
+  const { user, token } = store.state
   const { requiredLogin, redirectAlreadyLogin } = to.meta
+  // 如果没登陆
   if (!user.isLogin) {
-    if (requiredLogin) {
-      next('login')
+    // 判断token是否存在
+    if (token) {
+      axios.defaults.headers.common.Authorization = `Bearer ${token}`
+      store.dispatch('fetchCurrentUser').then(() => {
+        if (redirectAlreadyLogin) {
+          next('/')
+        } else {
+          next()
+        }
+      }).catch(e => {
+        console.error(e)
+        store.commit('logout')
+        next('login')
+      })
     } else {
-      next()
+      if (requiredLogin) {
+        next('login')
+      } else {
+        next()
+      }
     }
   } else {
     if (redirectAlreadyLogin) {

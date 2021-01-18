@@ -90,6 +90,36 @@ module.exports = {
           console.log(e)
         })
       })
+      app.get('/api/posts/:id', function (req, res) {
+        const url = `http://api.vikingship.xyz${req.path}`
+        axios.get(url, {
+          headers: {
+            referer: 'http://api.vikingship.xyz/public/swagger/index.html',
+            host: 'api.vikingship.xyz'
+          },
+          params: req.query
+        }).then((response) => {
+          res.json(response.data)
+        }).catch((e) => {
+          console.log(e)
+        })
+      })
+      // 上传文件
+      app.post('/api/upload', bodyParser.json(), function (req, res) {
+        const url = 'http://api.vikingship.xyz/api/upload'
+        axios.post(url, req.body, {
+          headers: {
+            referer: 'http://api.vikingship.xyz/public/swagger/index.html',
+            host: 'api.vikingship.xyz',
+            authorization: req.headers.authorization,
+            'Content-Type': 'multipart/form-data'
+          }
+        }).then((response) => {
+          res.json(response.data)
+        }).catch((e) => {
+          console.log(e)
+        })
+      })
     }
   },
   publicPath: ''
