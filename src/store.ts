@@ -138,21 +138,30 @@ const store = createStore<GlobalDataProps>({
         return dispatch('fetchCurrentUser')
       })
     },
-    fetchColumns ({ commit }, params = {}) {
+    fetchColumns ({ state, commit }, params = {}) {
       const { currentPage = 1, pageSize = 6 } = params
-      return AsyncAndCommit(`/api/columns?currentPage=${currentPage}&pageSize=${pageSize}`, 'fetchColumns', commit)
+      if (state.columns.currentPage < currentPage) {
+        return AsyncAndCommit(`/api/columns?currentPage=${currentPage}&pageSize=${pageSize}`, 'fetchColumns', commit)
+      }
     },
-    fetchColumn ({ commit }, cid) {
-      return AsyncAndCommit(`/api/columns/${cid}`, 'fetchColumn', commit)
+    fetchColumn ({ state, commit }, cid) {
+      // 为避免重复请求，只有当state.columns.data[cid]这一项不存在时才发送请求
+      if (!state.columns.data[cid]) {
+        return AsyncAndCommit(`/api/columns/${cid}`, 'fetchColumn', commit)
+      }
     },
-    fetchPosts ({ commit }, cid) {
-      return AsyncAndCommit(`/api/columns/${cid}/posts`, 'fetchPosts', commit, { method: 'get' }, cid)
+    fetchPosts ({ state, commit }, cid) {
+      // 避免重复请求
+      if (!state.posts.loadedColumns.includes(cid)) {
+        return AsyncAndCommit(`/api/columns/${cid}/posts`, 'fetchPosts', commit, { method: 'get' }, cid)
+      }
     },
     fetchPost ({ state, commit }, id) {
       const currentPost = state.posts.data[id]
       if (!currentPost || !currentPost.content) {
         return AsyncAndCommit(`/api/posts/${id}`, 'fetchPost', commit)
       } else {
+        // 返回promise是为了在组件中可以用.then()
         return Promise.resolve({ data: currentPost })
       }
     },
