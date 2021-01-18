@@ -47,9 +47,14 @@ export default defineComponent({
           password: passwordVal.value
         }
         // 请求登录接口，将登陆状态存到localstorage
-        store.commit('login', payload)
-        console.log(store.state.user)
-        router.push('/')
+        store.dispatch('loginAndFetch', payload).then(() => {
+          // 提示登录成功
+          setTimeout(() => {
+            router.push('/')
+          }, 2000)
+        }).catch(e => {
+          console.log(e)
+        })
       }
     }
     return {

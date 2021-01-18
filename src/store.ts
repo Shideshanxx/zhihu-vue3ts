@@ -1,5 +1,5 @@
 import { createStore, Commit } from 'vuex'
-import axios from 'axios'
+import axios, { AxiosRequestConfig } from 'axios'
 import { arrToObj, objToArr } from './helper'
 
 export interface ImageProps {
@@ -39,14 +39,15 @@ interface ListProps<P> {
   [id: string]: P;
 }
 export interface GlobalDataProps {
+  token: string;
   loading: boolean;
   columns: { data: ListProps<ColumnProps>; currentPage: number; total: number };
   posts: { data: ListProps<PostProps>; loadedColumns: string[] };
   user: UserProps;
 }
 
-const AsyncgetAndCommit = async (url: string, mutationName: string, commit: Commit, extraData?: any) => {
-  const { data } = await axios.get(url)
+const AsyncAndCommit = async (url: string, mutationName: string, commit: Commit, config: AxiosRequestConfig = { method: 'get' }, extraData?: any) => {
+  const { data } = await axios(url, config)
   if (extraData) {
     commit(mutationName, { data, extraData })
   } else {
@@ -56,14 +57,27 @@ const AsyncgetAndCommit = async (url: string, mutationName: string, commit: Comm
 
 const store = createStore<GlobalDataProps>({
   state: {
+    token: localStorage.getItem('token') || '',
     loading: false,
     columns: { data: {}, currentPage: 0, total: 0 },
     posts: { data: {}, loadedColumns: [] },
-    user: { isLogin: false, nickName: 'sds', column: '111' }
+    user: { isLogin: false }
   },
   mutations: {
-    login (state, payload) {
-      state.user = { ...state.user, isLogin: true, nickName: 'sds', email: payload.email }
+    login (state, rawData) {
+      const { token } = rawData.data
+      state.token = token
+      localStorage.setItem('token', token)
+      axios.defaults.headers.common.Authorization = `Bearer ${token}`
+    },
+    logout (state) {
+      state.token = ''
+      state.user = { isLogin: false }
+      localStorage.remove('token')
+      delete axios.defaults.headers.common.Authorization
+    },
+    fetchCurrentUser (state, rawData) {
+      state.user = { isLogin: true, ...rawData.data }
     },
     createPost (state, newPost) {
       state.posts.data[newPost._id] = newPost
@@ -93,15 +107,26 @@ const store = createStore<GlobalDataProps>({
     }
   },
   actions: {
+    login ({ commit }, payload) {
+      return AsyncAndCommit('/api/user/login', 'login', commit, { method: 'post', data: payload })
+    },
+    fetchCurrentUser ({ commit }) {
+      return AsyncAndCommit('/api/user/current', 'fetchCurrentUser', commit)
+    },
+    loginAndFetch ({ dispatch }, loginData) {
+      return dispatch('login', loginData).then(() => {
+        return dispatch('fetchCurrentUser')
+      })
+    },
     fetchColumns ({ commit }, params = {}) {
       const { currentPage = 1, pageSize = 6 } = params
-      AsyncgetAndCommit(`/api/columns?currentPage=${currentPage}&pageSize=${pageSize}`, 'fetchColumns', commit)
+      return AsyncAndCommit(`/api/columns?currentPage=${currentPage}&pageSize=${pageSize}`, 'fetchColumns', commit)
     },
     fetchColumn ({ commit }, cid) {
-      AsyncgetAndCommit(`/api/columns/${cid}`, 'fetchColumn', commit)
+      return AsyncAndCommit(`/api/columns/${cid}`, 'fetchColumn', commit)
     },
     fetchPosts ({ commit }, cid) {
-      AsyncgetAndCommit(`/api/columns/${cid}/posts`, 'fetchPosts', commit, cid)
+      return AsyncAndCommit(`/api/columns/${cid}/posts`, 'fetchPosts', commit, { method: 'get' }, cid)
     }
   },
   getters: {
