@@ -90,6 +90,7 @@ module.exports = {
           console.log(e)
         })
       })
+      // 获取某个post
       app.get('/api/posts/:id', function (req, res) {
         const url = `http://api.vikingship.xyz${req.path}`
         axios.get(url, {
@@ -114,6 +115,21 @@ module.exports = {
             authorization: req.headers.authorization,
             'Content-Type': 'multipart/form-data'
           }
+        }).then((response) => {
+          res.json(response.data)
+        }).catch((e) => {
+          console.log(e)
+        })
+      })
+      // 删除某个post
+      app.delete('/api/posts/:id', function (req, res) {
+        const url = `http://api.vikingship.xyz${req.path}`
+        axios.delete(url, {
+          headers: {
+            referer: 'http://api.vikingship.xyz/public/swagger/index.html',
+            host: 'api.vikingship.xyz'
+          },
+          params: req.query
         }).then((response) => {
           res.json(response.data)
         }).catch((e) => {

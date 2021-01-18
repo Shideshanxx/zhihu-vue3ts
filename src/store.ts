@@ -116,6 +116,9 @@ const store = createStore<GlobalDataProps>({
     updatePost (state, { data }) {
       state.posts.data[data._id] = data
     },
+    deletePost (state, { data }) {
+      delete state.posts.data[data._id]
+    },
     setLoading (state, status) {
       state.loading = status
     },
@@ -161,6 +164,9 @@ const store = createStore<GlobalDataProps>({
         method: 'patch',
         data: payload
       })
+    },
+    deletePost ({ commit }, id) {
+      return AsyncAndCommit(`/api/posts/${id}`, 'deletePost', commit, { method: 'delete' })
     }
   },
   getters: {
@@ -172,6 +178,9 @@ const store = createStore<GlobalDataProps>({
     },
     getColumns: (state) => {
       return objToArr(state.columns.data)
+    },
+    getCurrentPost: (state) => (id: string) => {
+      return state.posts.data[id]
     }
   }
 })

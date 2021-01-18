@@ -7,6 +7,7 @@ const Login = () => import('@/views/Login.vue')
 const Signup = () => import('@/views/Signup.vue')
 const ColumnDetail = () => import('@/views/ColumnDetail.vue')
 const CreatePost = () => import('@/views/CreatePost.vue')
+const PostDetail = () => import('@/views/PostDetail.vue')
 
 const routerHistory = createWebHashHistory()
 const router = createRouter({
@@ -39,6 +40,11 @@ const router = createRouter({
       path: '/column/:id',
       name: 'column',
       component: ColumnDetail
+    },
+    {
+      path: '/posts/:id',
+      name: 'post',
+      component: PostDetail
     }
   ]
 })
