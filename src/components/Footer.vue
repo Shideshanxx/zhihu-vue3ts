@@ -1,5 +1,5 @@
 <template>
-  <footer class="text-center py-4 text-secondary bg-light mt-6">
+  <footer class="text-center py-4 text-secondary bg-light mt-auto">
     <small>
       <ul class="list-inline mb-0">
         <li class="list-inline-item">© 2021 xx专栏</li>

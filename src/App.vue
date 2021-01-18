@@ -1,8 +1,8 @@
 <template>
-  <div class="container">
+  <div class="container-fluid px-0 flex-shrink-0">
     <global-header :user='currentUser'></global-header>
     <loader v-if="isLoading" text="拼命加载中..."></loader>
-    <router-view></router-view>
+    <router-view class="container"></router-view>
     <Footer />
   </div>
 </template>
